@@ -2,8 +2,6 @@ import os
 
 from setuptools import find_packages, setup
 
-from tomsbestfriend import __version__
-
 
 with open(os.path.join(os.path.dirname(__file__), "README.rst")) as readme:
     long_description = readme.read()
@@ -25,9 +23,10 @@ classifiers = [
 
 setup(
     name="tomsbestfriend",
-    version=__version__,
+    version="0.1.0-dev",
     packages=(),
     py_modules=["tomsbestfriend"],
+    install_requires=["parsley"],
     author="Julian Berman",
     author_email="Julian@GrayVines.com",
     classifiers=classifiers,
