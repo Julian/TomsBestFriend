@@ -92,5 +92,14 @@ class TestTOMLSuite(TestCase):
         ),
         "test_invalid_duplicate_key_keygroup" : (
             tomsbestfriend.Duplicated, "'type' already appears in 'fruit'.",
-        )
+        ),
+        "test_invalid_array_mixed_types_arrays_and_ints" : (
+            TypeError, "[1, ['Arrays are not integers.']] is not homogeneous.",
+        ),
+        "test_invalid_array_mixed_types_ints_and_floats" : (
+            TypeError, "[1, 1.0] is not homogeneous.",
+        ),
+        "test_invalid_array_mixed_types_strings_and_ints" : (
+            TypeError, "['hi', 42] is not homogeneous.",
+        ),
     }
