@@ -1,4 +1,3 @@
-from collections import defaultdict
 import datetime
 
 from parsley import makeGrammar as make_grammar
