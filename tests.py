@@ -1,9 +1,13 @@
 from datetime import datetime
 from glob import iglob as glob
-from unittest import TestCase
 import json
 import os
 import re
+
+try:
+    from unittest2 import TestCase
+except ImportError:
+    from unittest import TestCase
 
 import parsley
 
