@@ -3,7 +3,7 @@ import datetime
 from parsley import makeGrammar as make_grammar, _GrammarWrapper
 
 
-__version__ = "0.1.0-dev"
+__version__ = "0.1.0"
 
 
 class Duplicated(Exception):
