@@ -47,6 +47,7 @@ def load_tests(tests_dir=TESTS_DIR):
         """
 
         types = {
+            "bool" : {"true" : True, "false" : False}.get,
             "datetime" : lambda d : datetime.strptime(d, "%Y-%m-%dT%H:%M:%SZ"),
             "float" : float,
             "integer" : int,

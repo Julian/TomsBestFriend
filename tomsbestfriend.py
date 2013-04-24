@@ -43,7 +43,7 @@ escape_char = '\\' (('0' -> '\0')
 escape_unichar = 'u' <hexdigit{4}>:hs -> unichr(int(hs, 16)).encode("utf-8")
 integer = ('-' | -> ''):sign digit1_9:first <digit*>:rest -> int(sign + first + rest)
 float = integer:whole '.' <digit+>:frac -> float(str(whole) + "." + frac)
-boolean = ('true' | 'false')
+boolean = ('true' -> True) | ('false' -> False)
 datetime = (digit1_9:first digit{3}:rest -> "".join([first] + rest)):year '-'
             digit{2}:month '-'
             digit{2}:day 'T'
