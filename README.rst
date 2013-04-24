@@ -33,7 +33,7 @@ Contributing
 
 I'm Julian Berman.
 
-``TomsBestFriend`` is on `GitHub <http://github.com/Julian/TomsBestFriend`_.
+``TomsBestFriend`` is on `GitHub <http://github.com/Julian/TomsBestFriend>`_.
 
 Get in touch, via GitHub or otherwise, if you've got something to contribute,
 it'd be most welcome!
