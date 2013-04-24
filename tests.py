@@ -36,7 +36,7 @@ def load_tests(tests_dir=TESTS_DIR):
             with self.assertRaises(exception) as e:
                 tomsbestfriend.loads(toml)
             if msg is not None:
-                self.assertEqual(str(e.exception), msg)
+                self.assertEqual(str(e.exception).replace("u'", "'"), msg)
         return test
 
 

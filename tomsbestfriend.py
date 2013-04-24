@@ -1,6 +1,6 @@
 import datetime
 
-from parsley import makeGrammar as make_grammar
+from parsley import makeGrammar as make_grammar, _GrammarWrapper
 
 
 __version__ = "0.1.0-dev"
@@ -27,7 +27,7 @@ key_segment = <(~('[' | ']' | '.') anything)+>
 value_line = ~header_line ignore name:k ws '=' ws value:v line_end -> (k, v)
 name = <(~(space | '=' | nl) anything)+>
 value = string | datetime | float | integer | boolean | array
-array = '[' ignore elements:members ignore ']' -> members
+array = '[' ignore elements:members ignore ']' -> self.array(members)
 elements = (value:first (ignore ',' ignore value)*:rest ','? -> [first] + rest) | -> []
 string = '"' (escape_char | ~('"' | '\\') anything)*:c '"' -> ''.join(c).decode("utf-8")
 escape_char = '\\' (('0' -> '\0')
@@ -93,15 +93,44 @@ def document(groups):
     return doc
 
 
-TOMLParser = make_grammar(
-    toml_grammar, {"document" : document, "datetime" : datetime.datetime},
+_TOMLParser = make_grammar(
+    toml_grammar,
+    bindings={"document" : document, "datetime" : datetime.datetime},
+    name="TOMLParser",
+    unwrap=True,
 )
 
 
-def loads(toml):
+class TOMLParser(_TOMLParser):
+    """
+    A TOML parser.
+
+    """
+
+    def __init__(self, toml, homogeneous_arrays=True):
+        """
+        Initialize me.
+
+        :argument str toml: some TOML
+        :argument bool homogeneous_arrays: enfore homogeneity of array members
+
+        """
+
+        super(TOMLParser, self).__init__(toml)
+        self.homogeneous_arrays = homogeneous_arrays
+
+    def array(self, members):
+        if self.homogeneous_arrays and len(set(type(e) for e in members)) > 1:
+            raise TypeError("%r is not homogeneous." % (members,))
+        return members
+
+
+def loads(toml, **kwargs):
     """
     Load some ``TOML`` from a string.
 
+    :argument kwargs: passed along to :class:`TOMLParser`
+
     """
 
-    return TOMLParser(toml).document()
+    return _GrammarWrapper(TOMLParser(toml, **kwargs), toml).document()
