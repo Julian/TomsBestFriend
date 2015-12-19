@@ -2,6 +2,9 @@
 Tom's Best Friend
 =================
 
+**No longer maintained.**
+*Use https://pypi.python.org/pypi/toml -- it's good enough to recommend.*
+
 Tom's Best Friend is a `TOML <https://github.com/mojombo/toml>`_ parser for
 people with deadlines. No, sorry. For humans. No, dammit, all the good taglines
 are taken.
