@@ -14,12 +14,14 @@ import (
 var (
 	flagTestdir = ""
 	flagShowAll = false
+	flagEncoder = false
 )
 
 var (
 	parserCmd  string
 	dirInvalid string
 	dirValid   string
+	invalidExt = "toml" // set to "json" when testing encoders
 )
 
 func init() {
@@ -46,12 +48,19 @@ func init() {
 		"The path to the test directory.")
 	flag.BoolVar(&flagShowAll, "all", flagShowAll,
 		"When set, all tests will be shown.")
+	flag.BoolVar(&flagEncoder, "encoder", flagEncoder,
+		"When set, the given executable will be tested as a TOML encoder.")
 
 	flag.Usage = usage
 	flag.Parse()
 
-	dirInvalid = path.Join(flagTestdir, "invalid")
 	dirValid = path.Join(flagTestdir, "valid")
+	if flagEncoder {
+		dirInvalid = path.Join(flagTestdir, "invalid-encoder")
+		invalidExt = "json"
+	} else {
+		dirInvalid = path.Join(flagTestdir, "invalid")
+	}
 }
 
 func usage() {
@@ -68,12 +77,19 @@ The 'testdir' directory should have two sub-directories: 'invalid' and 'valid'.
 The 'invalid' directory should contain 'toml' files,
 where test names are the file names not including the '.toml' suffix.
 
-The 'valid' directory should contian 'toml' files and a 'json' file for each
+The 'valid' directory should contain 'toml' files and a 'json' file for each
 'toml' file, that contains the expected output of 'parser-cmd'. Test names
 are the file names not including the '.toml' or '.json' suffix.
 
 Test names must be globally unique. Behavior is undefined if there is a
 failure test with the same name as a valid test.
+
+Note that toml-test can also test TOML encoders with the "encoder" flag set.
+In particular, the binary will be given JSON on stdin and expect TOML on
+stdout. The JSON will be in the same format as specified in the toml-test
+README. Note that this depends on the correctness of my TOML parser!
+(For encoders, the same directory scheme above is used, except the
+'invalid-encoder' directory is used instead of the 'invalid' directory.)
 
 Flags:`)
 
@@ -117,6 +133,9 @@ func main() {
 		fmt.Println("")
 	}
 	fmt.Printf("%d passed, %d failed\n", passed, failed)
+	if failed > 0 {
+		os.Exit(1)
+	}
 }
 
 func runAllTests() []result {
@@ -132,7 +151,7 @@ func runAllTests() []result {
 
 	results := make([]result, 0, len(invalidTests)+len(validTests))
 	for _, f := range invalidTests {
-		if !strings.HasSuffix(f.Name(), ".toml") {
+		if !strings.HasSuffix(f.Name(), fmt.Sprintf(".%s", invalidExt)) {
 			continue
 		}
 		tname := stripSuffix(f.Name())
@@ -149,7 +168,7 @@ func runAllTests() []result {
 }
 
 func runTestByName(name string) result {
-	if readable(invPath("%s.toml", name)) {
+	if readable(invPath("%s.%s", name, invalidExt)) {
 		return runInvalidTest(name)
 	}
 	if readable(vPath("%s.toml", name)) && readable(vPath("%s.json", name)) {
